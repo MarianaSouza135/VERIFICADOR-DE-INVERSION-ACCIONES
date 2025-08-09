@@ -2,13 +2,21 @@
 
 Este proyecto es una herramienta de línea de comandos desarrollada en Python para analizar acciones y determinar su potencial de inversión basándose en una combinación de análisis fundamental y técnico.
 
-## Características
+## Cómo Funciona: El Sistema de Jueces
 
-- **Análisis Multifactorial:** Evalúa acciones utilizando una variedad de métricas financieras y técnicas.
-- **Puntuación Ponderada:** Asigna puntuaciones en diferentes categorías (fundamental, dividendos, técnico, etc.) y las pondera para generar un score final.
-- **Umbrales por Sector:** Adapta los criterios de valoración según el sector industrial de la empresa.
-- **Penalizaciones Dinámicas:** Aplica penalizaciones a la puntuación basadas en "banderas rojas" detectadas en las tendencias históricas (ej. FCF negativo, deuda creciente).
-- **Generación de Informes:** Presenta un informe detallado en la consola con un resumen, desglose de puntuaciones y una recomendación final.
+El script utiliza un sistema de "jueces", donde cada juez es un módulo especializado que evalúa un aspecto diferente de la acción. Las puntuaciones de cada juez se ponderan para calcular una puntuación final.
+
+- **Juez Fundamental:** Analiza la salud financiera de la empresa. Evalúa métricas clave como el PER (Price-to-Earnings), P/B (Price-to-Book), el nivel de Deuda/Capital y el ROE (Return on Equity), comparándolos con umbrales específicos del sector de la empresa.
+
+- **Juez Consistencia Dividendo:** Mide la fiabilidad y la historia del pago de dividendos. Valora positivamente a las empresas con un largo historial de pagos consecutivos y estables.
+
+- **Juez Rendimiento Dividendo:** Evalúa qué tan atractivo es el dividendo en relación con el precio actual de la acción (Dividend Yield). Una mayor rentabilidad obtiene una mejor puntuación.
+
+- **Juez Crecimiento Dividendo:** Analiza la tasa a la que la empresa ha aumentado sus dividendos a lo largo del tiempo (CAGR). Un crecimiento sólido y sostenible es un indicador positivo.
+
+- **Juez Crecimiento General:** Mide el crecimiento de los ingresos (revenue) de la empresa, un indicador clave de la expansión del negocio.
+
+- **Juez Técnico (Oportunidad):** Evalúa el "timing" de la inversión desde un punto de vista técnico. Analiza indicadores como el RSI (Relative Strength Index) para detectar condiciones de sobreventa/sobrecompra y la posición del precio respecto a sus medias móviles (SMA 50, SMA 200) para determinar la tendencia.
 
 ## Cómo Usarlo
 
@@ -22,9 +30,19 @@ Este proyecto es una herramienta de línea de comandos desarrollada en Python pa
     python analizador_acciones.py
     ```
 
-3.  **Analizar una acción:** Cuando el programa te lo pida, introduce el símbolo (ticker) de la acción que deseas analizar (por ejemplo, `AAPL`, `MSFT`, `GOOGL`).
+3.  **Analizar una acción:** Cuando el programa te lo pida, introduce el símbolo (ticker) de la acción que deseas analizar.
 
 4.  **Salir:** Escribe `salir` para terminar el programa.
+
+### Nota Importante sobre Tickers Internacionales
+
+Para analizar acciones de bolsas fuera de Estados Unidos, necesitas añadir el sufijo correspondiente al ticker, según el formato de Yahoo Finance. Por ejemplo:
+
+-   **Bolsa de Toronto (Canadá):** `TD.TO` (para Toronto-Dominion Bank)
+-   **Bolsa de Frankfurt (Alemania):** `ADS.DE` (para Adidas)
+-   **Bolsa de Londres (Reino Unido):** `ULVR.L` (para Unilever)
+
+Puedes buscar el ticker correcto en [Yahoo Finance](https://finance.yahoo.com/).
 
 ## Aviso
 
